@@ -7,7 +7,8 @@ An ASP.NET MVC application for managing a collection of movies and TV shows. The
 - **Create, Read, Update, Delete** movies and TV shows
 - Store information: Title, Release Date, Genre, Price, Rating
 - **Search** by Title or Genre
-- ![alt text](MovieApp/docs/images/Movie-List.png)
+
+![alt text](MovieApp/docs/images/Movie-List.png)
 
 ## Getting Started
 
