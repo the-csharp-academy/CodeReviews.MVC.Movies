@@ -1,0 +1,115 @@
+@model MvcMovie.ViewModels.Movies.MovieIndexViewModel
+
+@{
+    ViewData["Title"] = "Index";
+
+    Dictionary<string, string?> pagingRouteValues = new()
+    {
+        ["genre"] = Model.Genre,
+        ["searchString"] = Model.SearchString,
+        ["sortColumn"] = Model.SortColumn,
+        ["sortOrder"] = Model.SortOrder
+    };
+}
+
+<h1>Movies</h1>
+
+<form asp-controller="Movies" asp-action="Index" method="get">
+    <div class="d-flex align-items-center gap-2 flex-wrap mb-2">
+        <input class="form-control w-auto" id="search-string" type="text" name="searchString"
+            placeholder="Find by title..." value="@Model.SearchString" />
+        <input class="btn btn-secondary" type="submit" value="Search" />
+
+        <label class="form-label" for="genre-select">Genre: </label>
+        <select class="form-select w-auto" id="genre-select" name="genre" asp-items="Model.Genres"
+            onchange="this.form.submit()">
+            <option value="">All</option>
+        </select>
+
+
+        <label class="form-label" for="sort-column-select">Sort: </label>
+        <select class="form-select w-auto" id="sort-column-select" name="sortColumn" asp-items="Model.SortColumns"
+            onchange="this.form.submit()"></select>
+
+        <select class="form-select w-auto" id="sort-order-select" name="sortOrder" asp-items="Model.SortOrders"
+            onchange="this.form.submit()"></select>
+
+    </div>
+</form>
+
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.Movies![0].Title)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Movies![0].ReleaseDate)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Movies![0].Genre)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Movies![0].Price)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.Movies![0].Rating)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+        @foreach (var item in Model.Movies!)
+        {
+            <tr>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Title)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.ReleaseDate)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Genre)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Price)
+                </td>
+                <td>
+                    @Html.DisplayFor(modelItem => item.Rating)
+                </td>
+                <td>
+                    <a asp-action="Edit" asp-route-id="@item.Id">Edit</a> |
+                    <a asp-action="Details" asp-route-id="@item.Id">Details</a> |
+                    <a asp-action="Delete" asp-route-id="@item.Id">Delete</a>
+                </td>
+            </tr>
+        }
+    </tbody>
+</table>
+
+<div class="d-flex justify-content-between align-items-center mb-3">
+    <ul class="pagination mb-0">
+        <li class="page-item @(Model.PagingMetadata.HasPreviousPage ? "" : "disabled")">
+            <a class="page-link" asp-action="Index" asp-all-route-data="pagingRouteValues"
+                asp-route-page="@(Model.PagingMetadata.Page - 1)">
+                <i class="bi bi-caret-left-fill"></i>
+            </a>
+        </li>
+        @for (var i = Model.PagingMetadata.StartPage; i <= Model.PagingMetadata.EndPage; i++)
+        {
+            <li class="page-item @(i == Model.PagingMetadata.Page ? "active" : "")">
+                <a class="page-link" asp-action="Index" asp-all-route-data="pagingRouteValues" asp-route-page="@i">
+                    @i
+                </a>
+            </li>
+        }
+        <li class="page-item @(Model.PagingMetadata.HasNextPage ? "" : "disabled")">
+            <a class="page-link" asp-action="Index" asp-all-route-data="pagingRouteValues"
+                asp-route-page="@(Model.PagingMetadata.Page + 1)">
+                <i class="bi bi-caret-right-fill"></i>
+            </a>
+        </li>
+    </ul>
+
+    <a class="btn btn-primary" asp-action="Create">Create New</a>
+</div>
