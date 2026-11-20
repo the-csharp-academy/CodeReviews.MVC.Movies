@@ -1,21 +1,24 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using System.Text.Encodings.Web;
 
-namespace MvcMovie.Controllers;
-
-public class HelloWorldController : Controller
+namespace Movies.AnaClos.Controllers
 {
-    // 
-    // GET: /HelloWorld/
-    public IActionResult Index()
+    public class HelloWorldController : Controller
     {
-        return View();
-    }
+        // 
+        // GET: /HelloWorld/
+        public IActionResult Index()
+        {
+            return View();
+        }
 
-    public IActionResult Welcome(string name, int numTimes = 1)
-    {
-        ViewData["Message"] = "Hello " + name;
-        ViewData["NumTimes"] = numTimes;
-        return View();
+        // GET: /HelloWorld/Welcome/ 
+        // Requires using System.Text.Encodings.Web;
+        public IActionResult Welcome(string name, int numTimes = 1)
+        {
+            ViewData["Message"] = "Hello " + name;
+            ViewData["NumTimes"] = numTimes;
+            return View();
+        }
     }
 }
