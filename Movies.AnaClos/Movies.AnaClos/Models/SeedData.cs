@@ -1,9 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.DependencyInjection;
 using Movies.AnaClos.Data;
-using System;
-using System.Linq;
-using Movies.AnaClos.Models;
 
 namespace Movies.AnaClos.Models;
 
@@ -15,10 +11,9 @@ public static class SeedData
             serviceProvider.GetRequiredService<
                 DbContextOptions<MoviesAnaClosContext>>()))
         {
-            // Look for any movies.
             if (context.Movie.Any())
             {
-                return;   // DB has been seeded
+                return;
             }
             context.Movie.AddRange(
                 new Movie

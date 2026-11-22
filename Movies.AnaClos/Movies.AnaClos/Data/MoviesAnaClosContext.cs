@@ -1,15 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.EntityFrameworkCore;
-using Movies.AnaClos.Models;
+﻿using Microsoft.EntityFrameworkCore;
 
 namespace Movies.AnaClos.Data
 {
     public class MoviesAnaClosContext : DbContext
     {
-        public MoviesAnaClosContext (DbContextOptions<MoviesAnaClosContext> options)
+        public MoviesAnaClosContext(DbContextOptions<MoviesAnaClosContext> options)
             : base(options)
         {
         }

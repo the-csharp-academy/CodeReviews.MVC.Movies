@@ -10,6 +10,10 @@
     <a asp-action="Create">Create New</a>
 </p>
 
+<a asp-action="ExportToExcel"
+   asp-route-searchString="@Model.SearchString"
+   asp-route-movieGenre="@Model.MovieGenre">Export to Excel</a>
+
 <form asp-controller="Movies" asp-action="Index">
     <p>
         <select asp-for="MovieGenre" asp-items="Model.Genres">

@@ -1,10 +1,12 @@
 using Microsoft.EntityFrameworkCore;
 using Movies.AnaClos.Data;
 using Movies.AnaClos.Models;
+using OfficeOpenXml;
+
+ExcelPackage.License.SetNonCommercialPersonal("Ana Clos");
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddDbContext<MoviesAnaClosContext>(options =>
@@ -20,7 +22,6 @@ using (var scope = app.Services.CreateScope())
     SeedData.Initialize(services);
 }
 
-// Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
 {
     app.UseExceptionHandler("/Home/Error");

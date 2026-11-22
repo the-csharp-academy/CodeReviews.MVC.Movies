@@ -1,6 +1,6 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using Movies.AnaClos.Models;
+using System.Diagnostics;
 
 namespace Movies.AnaClos.Controllers
 {
@@ -14,11 +14,6 @@ namespace Movies.AnaClos.Controllers
         }
 
         public IActionResult Index()
-        {
-            return View();
-        }
-
-        public IActionResult Privacy()
         {
             return View();
         }

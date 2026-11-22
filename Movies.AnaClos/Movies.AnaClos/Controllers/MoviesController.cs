@@ -1,12 +1,10 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Mvc;
 using Microsoft.AspNetCore.Mvc.Rendering;
 using Microsoft.EntityFrameworkCore;
 using Movies.AnaClos.Data;
 using Movies.AnaClos.Models;
+using OfficeOpenXml;
+using System.Data;
 
 namespace Movies.AnaClos.Controllers
 {
@@ -19,18 +17,8 @@ namespace Movies.AnaClos.Controllers
             _context = context;
         }
 
-        // GET: Movies
-        public async Task<IActionResult> Index(string movieGenre, string searchString)
+        private IQueryable<Movie> GetFilteredMovies(string searchString, string movieGenre)
         {
-            if (_context.Movie == null)
-            {
-                return Problem("Entity set 'MvcMovieContext.Movie'  is null.");
-            }
-
-            // Use LINQ to get list of genres.
-            IQueryable<string> genreQuery = from m in _context.Movie
-                                            orderby m.Genre
-                                            select m.Genre;
             var movies = from m in _context.Movie
                          select m;
 
@@ -43,17 +31,62 @@ namespace Movies.AnaClos.Controllers
             {
                 movies = movies.Where(x => x.Genre == movieGenre);
             }
+            return movies;
+        }
 
+        public async Task<IActionResult> ExportToExcel(string searchString, string movieGenre)
+        {
+            int fila = 2;
+            using (ExcelPackage excelPackage = new ExcelPackage())
+            {
+                try
+                {
+                    var listMovies = await GetFilteredMovies(searchString, movieGenre).ToListAsync();
+
+                    var worksheet = excelPackage.Workbook.Worksheets.Add("Movies");
+                    worksheet.Cells["A1"].LoadFromCollection(listMovies, true);
+
+                    for(int column=1;column <= worksheet.Dimension.End.Column;column++)
+                    {
+                        if(worksheet.Cells[fila, column].Value is DateTime)
+                        {
+                            worksheet.Column(column).Style.Numberformat.Format = "yyyy-mm-dd";
+                        }
+                    }
+
+                    worksheet.Cells.AutoFitColumns();
+
+                    var byteArray = excelPackage.GetAsByteArray();
+
+                    return File(byteArray, "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "movies.xlsx");
+                }
+                catch (Exception )
+                {
+                    return Problem("The movies could not be exported to Excel.");
+                }
+            }
+        }
+
+        public async Task<IActionResult> Index(string searchString, string movieGenre)
+        {
+            var movies = GetFilteredMovies(searchString,movieGenre);
+            await movies.ToListAsync();
+
+            IQueryable<string> genreQuery = from m in _context.Movie
+                                            orderby m.Genre
+                                            select m.Genre;
+           
             var movieGenreVM = new MovieGenreViewModel
             {
                 Genres = new SelectList(await genreQuery.Distinct().ToListAsync()),
-                Movies = await movies.ToListAsync()
+                Movies = await movies.ToListAsync(),
+                SearchString = searchString,
+                MovieGenre = movieGenre
             };
 
             return View(movieGenreVM);
         }
 
-        // GET: Movies/Details/5
         public async Task<IActionResult> Details(int? id)
         {
             if (id == null)
@@ -71,15 +104,11 @@ namespace Movies.AnaClos.Controllers
             return View(movie);
         }
 
-        // GET: Movies/Create
         public IActionResult Create()
         {
             return View();
         }
 
-        // POST: Movies/Create
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Create([Bind("Id,Title,ReleaseDate,Genre,Price,Rating")] Movie movie)
@@ -93,7 +122,6 @@ namespace Movies.AnaClos.Controllers
             return View(movie);
         }
 
-        // GET: Movies/Edit/5
         public async Task<IActionResult> Edit(int? id)
         {
             if (id == null)
@@ -109,9 +137,6 @@ namespace Movies.AnaClos.Controllers
             return View(movie);
         }
 
-        // POST: Movies/Edit/5
-        // To protect from overposting attacks, enable the specific properties you want to bind to.
-        // For more details, see http://go.microsoft.com/fwlink/?LinkId=317598.
         [HttpPost]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> Edit(int id, [Bind("Id,Title,ReleaseDate,Genre,Price,Rating")] Movie movie)
@@ -144,7 +169,6 @@ namespace Movies.AnaClos.Controllers
             return View(movie);
         }
 
-        // GET: Movies/Delete/5
         public async Task<IActionResult> Delete(int? id)
         {
             if (id == null)
@@ -162,7 +186,6 @@ namespace Movies.AnaClos.Controllers
             return View(movie);
         }
 
-        // POST: Movies/Delete/5
         [HttpPost, ActionName("Delete")]
         [ValidateAntiForgeryToken]
         public async Task<IActionResult> DeleteConfirmed(int id)
