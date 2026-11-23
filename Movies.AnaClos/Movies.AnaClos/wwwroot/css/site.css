@@ -18,5 +18,13 @@ html {
 }
 
 body {
-  margin-bottom: 60px;
+    margin-bottom: 60px;
+    background-color: #FAF6EE;
+    color: #1F6F5C;
+}
+.navbar-green {
+    background-color: #1F6F5C;
+}
+.table {
+    color: inherit;
 }
